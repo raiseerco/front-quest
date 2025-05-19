@@ -1,0 +1,64 @@
+{
+  "name": "leo-front",
+  "version": "1.0.1",
+  "description": "Create a **React app** that demonstrates blockchain integration and state management using React Context or Zustand. Keep it clean, simple, and well-structured.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wonderland-quests/Leo-front.git"
+  },
+  "keywords": [],
+  "author": "Leo Sagan @ethsagan",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/wonderland-quests/Leo-front/issues"
+  },
+  "homepage": "https://github.com/wonderland-quests/Leo-front#readme",
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.5",
+    "@types/node": "^22.15.19",
+    "@types/react": "^19.1.4",
+    "classnames": "^2.5.1",
+    "framer-motion": "^12.12.1",
+    "next": "^15.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.8.3",
+    "ui": "github:shadcn/ui",
+    "viem": "^2.29.4",
+    "wagmi": "^2.15.4",
+    "zustand": "^5.0.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.3.2",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "postcss": "^8.4.35",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.1"
+  }
+}

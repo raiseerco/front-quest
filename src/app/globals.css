@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* light */
+    --background: 60 9% 98%;
+    --foreground: 24 10% 10%;
+    --primary: 4 16% 93%;
+    --primary-foreground: 24 10% 10%;
+    --secondary: 20 6% 90%;
+    --secondary-foreground: 24 10% 10%;
+  }
+
+  .dark {
+    /* dark */
+    --background: 24 10% 10%;
+    --foreground: 60 9% 98%;
+    --primary: 25 6% 5%;
+    --primary-foreground: 60 9% 48%;
+    --secondary: 24 6% 15%;
+    --secondary-foreground: 60 9% 98%;
+  }
+
+  .reading {
+    /* reading */
+    --background: 39 33% 91%;
+    --foreground: 20 15% 20%;
+    --primary: 28 35% 82%;
+    --primary-foreground: 39 33% 91%;
+    --secondary: 28 35% 75%;
+    --secondary-foreground: 39 33% 91%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground transition-colors duration-200;
+  }
+
+  .dark {
+    @apply bg-background text-foreground;
+  }
+
+  .dark h1,
+  .dark h2,
+  .dark h3 {
+    @apply text-primary;
+  }
+
+  .dark a {
+    @apply text-secondary hover:text-primary;
+  }
+
+  .dark button {
+    @apply bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground;
+  }
+
+  .reading {
+    @apply bg-[#f5ecd8] text-[#3b2f2f];
+  }
+
+  .reading h1,
+  .reading h2,
+  .reading h3 {
+    @apply text-[#ab5a1f];
+  }
+
+  .reading a {
+    @apply text-[#81603f] hover:text-[#8b4513];
+  }
+
+  .reading button {
+    @apply bg-[#a67c52] text-[#f5ecd8] hover:bg-[#ad6838];
+  }
+}

@@ -1,0 +1,14 @@
+.next
+node_modules
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.test.local
+.env.test.local
+*.log
+
+TODO.md
+TECH.md
+PLAN.md

@@ -1,94 +1,65 @@
 export default function LandingContent() {
+  const techStackCards = [
+    {
+      title: "NextJS 15 + TypeScript",
+      description:
+        "Production-ready React framework for server-rendered applications with built-in TypeScript support for type safety and better developer experience.",
+    },
+    {
+      title: "RainbowKit + Wagmi",
+      description:
+        "Beautiful wallet connection UI and powerful Ethereum hooks for seamless Web3 integration in your React applications.",
+    },
+    {
+      title: "Zustand",
+      description:
+        "A small, fast and scalable state-management solution with a comfy API based on hooks and minimal boilerplate.",
+    },
+    {
+      title: "TailwindCSS + shadcn/ui",
+      description:
+        "Utility-first CSS framework combined with beautiful, accessible UI components built with Radix UI and Tailwind.",
+    },
+    {
+      title: "Framer Motion",
+      description:
+        "Production-ready animation library for React that makes creating fluid, interactive animations simple.",
+    },
+    {
+      title: "Vitest + Cypress",
+      description:
+        "Blazing fast unit testing with Vitest and reliable end-to-end testing with Cypress for maximum code confidence.",
+    },
+  ]
+
   return (
-    <main className="flex-1 p-4 md:p-8">
-      <section className="mx-auto max-w-4xl">
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
-            Welcome to the quest of the Wonderland
-          </h1>
-          <p className="mb-8 text-xl text-gray-600">
-            Discover amazing features and possibilities with our innovative solution
-          </p>
-          <button className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700">
-            Get Started
+    <main className="flex-1">
+      {/* Hero */}
+      <header className="flex h-dvh items-center justify-center  px-4 py-20 text-center ">
+        <div className="mx-auto max-w-4xl">
+          <h1 className="mb-6 text-4xl font-bold md:text-6xl">The Quest of the Wonderland</h1>
+          <p className="mb-8 text-xl opacity-90 md:text-2xl">From zero to 0x1</p>
+          <button className="rounded-lg bg-white px-8 py-4 text-lg font-semibold text-blue-600 transition-all hover:scale-105 hover:shadow-xl">
+            step into the wonderapp
           </button>
         </div>
+      </header>
 
-        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div className="rounded-lg bg-white p-6 shadow-md">
-            <h2 className="mb-4 text-xl font-semibold">Feature One</h2>
-            <p className="text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-              incididunt ut labore.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6 shadow-md">
-            <h2 className="mb-4 text-xl font-semibold">Feature Two</h2>
-            <p className="text-gray-600">
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-              ea commodo.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6 shadow-md">
-            <h2 className="mb-4 text-xl font-semibold">Feature Three</h2>
-            <p className="text-gray-600">
-              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla.
-            </p>
-          </div>
+      {/* Tech stack */}
+      <section className="h-vh mx-auto max-w-7xl px-4 py-16 md:px-8">
+        <h2 className="mb-12 text-center text-3xl font-bold text-gray-900">About the stack</h2>
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {techStackCards.map((card, index) => (
+            <article
+              key={index}
+              className="transform rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:scale-105 hover:shadow-md"
+            >
+              <h3 className="mb-4 text-xl font-semibold text-gray-900">{card.title}</h3>
+              <p className="text-gray-600">{card.description}</p>
+            </article>
+          ))}
         </div>
-
-        <section className="mb-12 rounded-xl bg-gray-50 p-8">
-          <h2 className="mb-8 text-center text-3xl font-bold">Why Choose Us?</h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="mb-2 text-lg font-semibold">Quality Service</h3>
-                <p className="text-gray-600">
-                  We provide top-notch service with attention to every detail.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="mb-2 text-lg font-semibold">24/7 Support</h3>
-                <p className="text-gray-600">
-                  Our team is always available to help you with any questions.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
       </section>
     </main>
   )

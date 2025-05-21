@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode, useEffect } from "react"
-import { useAppStore } from "../../lib/store"
+import { useAppStore } from "@lib/store"
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useAppStore((state) => state.theme)

@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { useAppStore } from "../../lib/store"
+import { useAppStore } from "@lib/store"
 
 const themes = ["light", "dark", "reading"] as const
 

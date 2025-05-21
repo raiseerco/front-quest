@@ -1,5 +1,5 @@
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
+import Navbar from "@components/LandingNavbar"
+import Footer from "@components/LandingFooter"
 
 export default function About() {
   return (

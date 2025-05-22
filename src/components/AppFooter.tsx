@@ -1,14 +1,33 @@
-export default function Footer() {
+"use client"
+
+import { useAppStore } from "@lib/store"
+import { useWalletSync } from "@lib/hooks/useWalletSync"
+
+export default function AppFooter() {
+  useWalletSync()
+  const { address, chainId, isConnected } = useAppStore()
+
   return (
     <footer className="bg-primary text-foreground">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
-            <h3 className="mb-4 text-lg font-semibold">About</h3>
-            <p className="text-foreground/80">
-              I am a software engineer with a passion for building products that help people live
-              better lives.
-            </p>
+            <h3 className="mb-4 text-lg font-semibold">Wallet Status</h3>
+            <div className="space-y-2 text-foreground/80">
+              <p>
+                Status:{" "}
+                <span className="font-mono">{isConnected ? "Connected" : "Disconnected"}</span>
+              </p>
+              <p>
+                Chain ID: <span className="font-mono">{chainId || "Not connected"}</span>
+              </p>
+              <p>
+                Address:{" "}
+                <span className="font-mono">
+                  {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
+                </span>
+              </p>
+            </div>
           </div>
           <div></div>
           <div>

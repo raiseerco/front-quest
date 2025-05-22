@@ -1,6 +1,6 @@
-import Navbar from "./components/Navbar"
-import LandingContent from "./components/LandingContent"
-import Footer from "./components/Footer"
+import Navbar from "@components/LandingNavbar"
+import LandingContent from "@components/LandingContent"
+import Footer from "@components/LandingFooter"
 
 export default function Home() {
   return (

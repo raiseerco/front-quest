@@ -7,12 +7,12 @@ import MobileMenuButton from "./MobileMenuButton"
 import ThemeToggle from "./ThemeToggle"
 
 const navItems = [
-  { href: "/", label: "Home" },
+  { href: "/application", label: "App" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const
 
-export default function Navbar() {
+export default function LandingNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
 

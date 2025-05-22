@@ -15,7 +15,7 @@ const navItems: NavItem[] = [
   { href: "/help", label: "Help & Support" },
 ]
 
-export default function Sidebar() {
+export default function AppSidebar() {
   const pathname = usePathname()
 
   return (

@@ -13,6 +13,23 @@
     --secondary-foreground: 24 10% 10%;
   }
 
+  * {
+    font-family: var(--font-poppins), system-ui, sans-serif;
+  }
+
+  /* rainbowkit custom */
+  [data-rk] {
+    font-family: var(--font-poppins), system-ui, sans-serif !important;
+  }
+
+  .rk-fonts-body {
+    font-family: var(--font-poppins), system-ui, sans-serif !important;
+  }
+
+  .rk-fonts-button {
+    font-family: var(--font-poppins), system-ui, sans-serif !important;
+  }
+
   .dark {
     /* dark */
     --background: 24 10% 10%;

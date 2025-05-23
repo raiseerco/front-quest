@@ -41,6 +41,7 @@
     "next": "^15.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-toastify": "^11.0.5",
     "typescript": "^5.8.3",
     "ui": "github:shadcn/ui",
     "viem": "^2.29.4",

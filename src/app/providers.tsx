@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { WagmiProvider } from "wagmi"
 import { RainbowKitProvider, lightTheme, darkTheme, Theme } from "@rainbow-me/rainbowkit"
 import merge from "lodash.merge"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 import { config } from "@lib/wagmi"
 import ThemeProvider from "@components/ThemeProvider"
@@ -35,7 +37,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
             darkMode: customDarkTheme,
           }}
         >
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            {children}
+            <ToastContainer position="bottom-right" />
+          </ThemeProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

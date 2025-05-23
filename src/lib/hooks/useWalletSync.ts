@@ -1,10 +1,10 @@
 import { useEffect } from "react"
-import { useAccount, useClient, useConnectorClient } from "wagmi"
+import { useAccount, useClient, useWalletClient } from "wagmi"
 import { useAppStore } from "@lib/store"
 
 export function useWalletSync() {
   const { address, chain, isConnected, isConnecting, isDisconnected } = useAccount()
-  const { data: walletClient } = useConnectorClient()
+  const { data: walletClient } = useWalletClient()
   const publicClient = useClient()
 
   const setAddress = useAppStore((state) => state.setAddress)

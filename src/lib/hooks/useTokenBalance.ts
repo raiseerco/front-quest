@@ -14,6 +14,7 @@ export function useTokenBalance(tokenAddress: `0x${string}`) {
 
     const fetchBalance = async () => {
       try {
+        if (!tokenAddress) return
         const balance = await publicClient.readContract({
           address: tokenAddress,
           abi: erc20Abi,

@@ -7,7 +7,7 @@ export type TransactionStatus = "pending" | "success" | "error"
 
 export interface Transaction {
   hash: string
-  type: "mint" | "approve" | "transfer"
+  type: "mint" | "approve" | "transfer" | "permit"
   token: string
   amount: bigint
   from: string

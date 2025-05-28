@@ -1,7 +1,9 @@
-import { type Address, erc20Abi } from "viem"
+import { type Address, erc20Abi, type PublicClient } from "viem"
 import { sepolia } from "wagmi/chains"
 import { useAppStore } from "@lib/store"
+import { TOKEN_ADDRESSES } from "@lib/contracts"
 
+// Extend the ABI to include mint function
 const tokenAbi = [
   ...erc20Abi,
   {
@@ -16,26 +18,91 @@ const tokenAbi = [
   },
 ] as const
 
-export async function checkAllowance(
-  tokenAddress: Address,
-  ownerAddress: Address,
-  spenderAddress: Address
-) {
+// FIXME move to constants, etc
+export const MAX_UINT256 = BigInt(
+  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+)
+
+async function getTokenMetadata(provider: PublicClient, tokenAddress: Address) {
+  const [name, symbol, decimals] = await Promise.all([
+    provider.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "name",
+    }),
+    provider.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "symbol",
+    }),
+    provider.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "decimals",
+    }),
+  ])
+
+  return { name, symbol, decimals }
+}
+
+export async function tokensMetadata() {
+  const provider = useAppStore.getState().provider as PublicClient
+  if (!provider) throw new Error("Provider not found")
+
+  const tokens = Object.entries(TOKEN_ADDRESSES.sepolia).map(([symbol, address]) => ({
+    symbol,
+    address: address as Address,
+  }))
+
+  const enriched = await Promise.all(
+    tokens.map(async ({ symbol, address }) => {
+      const metadata = await getTokenMetadata(provider, address)
+      return {
+        symbol,
+        address,
+        ...metadata,
+      }
+    })
+  )
+
+  return enriched
+}
+
+export async function checkAllowance(tokenAddress: Address, userAddress: Address): Promise<bigint> {
+  const provider = useAppStore.getState().provider as PublicClient
+  if (!provider) throw new Error("Provider not found")
+
+  try {
+    const allowance = await provider.readContract({
+      address: tokenAddress,
+      abi: tokenAbi,
+      functionName: "allowance",
+      args: [userAddress, userAddress], // i am the spender
+    })
+    console.log("allowance", allowance)
+    return allowance
+  } catch (error) {
+    console.error("Error checking allowance:", error)
+    return BigInt(0)
+  }
+}
+
+export async function getBalance(tokenAddress: Address, address: Address) {
   const provider = useAppStore.getState().provider
   if (!provider) throw new Error("Provider not found")
 
   return provider.readContract({
     address: tokenAddress,
     abi: tokenAbi,
-    functionName: "allowance",
-    args: [ownerAddress, spenderAddress],
+    functionName: "balanceOf",
+    args: [address],
   })
 }
 
 export async function approve(tokenAddress: Address, spenderAddress: Address, amount: bigint) {
   const provider = useAppStore.getState().provider
   const walletClient = useAppStore.getState().walletClient
-  if (!provider || !walletClient) throw new Error("Provider or wallet not connected")
+  if (!walletClient) throw new Error("Provider or wallet not connected")
 
   const account = walletClient.account
   if (!account) throw new Error("No account found")
@@ -60,16 +127,29 @@ export async function transfer(tokenAddress: Address, to: Address, amount: bigin
   const account = walletClient.account
   if (!account) throw new Error("No account found")
 
-  const { request } = await provider.simulateContract({
+  const currentAllowance = await checkAllowance(tokenAddress, account.address)
+  if (currentAllowance < amount) {
+    const { request: approveRequest } = await provider.simulateContract({
+      address: tokenAddress,
+      abi: tokenAbi,
+      functionName: "approve",
+      args: [to, amount],
+      account,
+      chain: sepolia,
+    })
+    await walletClient.writeContract(approveRequest)
+  }
+
+  const { request: transferRequest } = await provider.simulateContract({
     address: tokenAddress,
     abi: tokenAbi,
-    functionName: "transfer",
-    args: [to, amount],
+    functionName: "transferFrom",
+    args: [account.address, to, amount],
     account,
     chain: sepolia,
   })
 
-  return walletClient.writeContract(request)
+  return walletClient.writeContract(transferRequest)
 }
 
 export async function mint(tokenAddress: Address, amount: bigint) {
@@ -86,17 +166,5 @@ export async function mint(tokenAddress: Address, amount: bigint) {
     args: [account.address, amount],
     chain: sepolia,
     account: account.address,
-  })
-}
-
-export async function getBalance(tokenAddress: Address, address: Address) {
-  const provider = useAppStore.getState().provider
-  if (!provider) throw new Error("Provider not found")
-
-  return provider.readContract({
-    address: tokenAddress,
-    abi: tokenAbi,
-    functionName: "balanceOf",
-    args: [address],
   })
 }

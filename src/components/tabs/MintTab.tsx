@@ -1,81 +1,94 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAccount, usePublicClient } from "wagmi"
 import { parseUnits, type Address, getAddress } from "viem"
-import { TOKEN_ADDRESSES } from "@lib/contracts"
+import { TokenMetadata } from "@lib/contracts"
 import { useAppStore } from "@lib/store"
-import { mint } from "@lib/contracts/erc20"
+import { mint, tokensMetadata } from "@lib/contracts/erc20"
 import { Spinner } from "@components/Ui/spinner"
 import { showContractErrorToast } from "@lib/errorHandler"
 
 export default function MintTab() {
-  const { address } = useAccount()
+  const { address: userAddress } = useAccount()
   const publicClient = usePublicClient()
   const [selectedToken, setSelectedToken] = useState<Address>()
   const [amount, setAmount] = useState("")
-
   const isMinting = useAppStore((s) => s.isMinting)
   const setMinting = useAppStore((s) => s.setMinting)
   const addTransaction = useAppStore((s) => s.addTransaction)
   const updateTransaction = useAppStore((s) => s.updateTransaction)
+  const [selectedTokenMetadata, setSelectedTokenMetadata] = useState<TokenMetadata | null>(null)
+  const [tokens, setTokens] = useState([])
 
-  const tokens = Object.entries(TOKEN_ADDRESSES.sepolia).map(([symbol, address]) => ({
-    symbol,
-    address: address as Address,
-  }))
+  useEffect(() => {
+    const fetchTokens = async () => {
+      const tokenData = await tokensMetadata()
+      setTokens(tokenData)
+      console.log("tokenData ", tokenData)
+    }
+    fetchTokens()
+  }, [])
 
   const handleMint = async () => {
-    if (!selectedToken || !amount || !address) return
+    if (!selectedToken || !amount || !userAddress) return
 
     try {
-      const amountBigInt = parseUnits(amount, 6) // FIXME: get decimals from token
-
+      const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
       setMinting(true)
-      try {
-        const mintTx = await mint(selectedToken, amountBigInt)
+      const mintTx = await mint(selectedToken, amountBigInt)
 
-        addTransaction({
-          hash: mintTx,
-          type: "mint",
-          token: selectedToken,
-          amount: amountBigInt,
-          from: selectedToken,
-          to: address as Address,
-          status: "pending",
-          timestamp: Date.now(),
-        })
+      addTransaction({
+        hash: mintTx,
+        type: "mint",
+        token: selectedToken,
+        amount: amountBigInt,
+        from: selectedToken,
+        to: userAddress as Address,
+        status: "pending",
+        timestamp: Date.now(),
+      })
 
-        if (!publicClient) throw new Error("Public client not found")
+      if (!publicClient) throw new Error("Public client not found")
 
-        await publicClient.waitForTransactionReceipt({
-          hash: mintTx as `0x${string}`,
-        })
-        updateTransaction(mintTx, "success")
-        setMinting(false)
+      await publicClient.waitForTransactionReceipt({
+        hash: mintTx as `0x${string}`,
+      })
+      updateTransaction(mintTx, "success")
+      setMinting(false)
+      // TODO: SUCCESS TOAST
 
-        // Clear scr
-        setAmount("")
-        setSelectedToken(undefined)
-      } catch (error) {
-        showContractErrorToast(error)
-        if (isMinting) {
-          setMinting(false)
-        }
-      }
+      // Clear scr
+      setAmount("")
+      setSelectedToken(undefined)
     } catch (error) {
-      console.log("Error in transaction processing:", error)
       const errMapped = showContractErrorToast(error)
-
       if (isMinting) {
         setMinting(false)
       }
 
-      // Clear form only if it wasn't a user rejection
+      // Clear form only if it wasnt a user rejection
       if (errMapped.type !== "USER_REJECTED") {
         setAmount("")
         setSelectedToken(undefined)
       }
+    }
+  }
+
+  const handleTokenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedAddress = e.target.value
+    const token = tokens.find((t) => t.address === selectedAddress) || null
+
+    if (token && userAddress) {
+      try {
+        const tokenAddress = getAddress(token.address)
+        setSelectedToken(tokenAddress)
+        setSelectedTokenMetadata(token)
+      } catch (error) {
+        console.error(error)
+      }
+    } else {
+      setSelectedToken(undefined)
     }
   }
 
@@ -89,24 +102,13 @@ export default function MintTab() {
           id="token-select"
           className="rounded-lg border border-gray-300 p-2"
           value={selectedToken || ""}
-          onChange={(e) => {
-            const value = e.target.value
-            if (value) {
-              try {
-                setSelectedToken(getAddress(value))
-              } catch (error) {
-                console.error("Invalid address:", error)
-              }
-            } else {
-              setSelectedToken(undefined)
-            }
-          }}
+          onChange={handleTokenChange}
           disabled={isMinting}
         >
           <option value="">Select a token</option>
           {tokens.map((token) => (
             <option key={token.address} value={token.address}>
-              {token.symbol}
+              {token.name} ({token.symbol})
             </option>
           ))}
         </select>

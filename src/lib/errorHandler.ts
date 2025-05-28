@@ -20,6 +20,12 @@ export const ContractErrors = {
 } as const
 
 export type ContractErrorType = keyof typeof ContractErrors
+const knownRevertReasons: Record<string, ContractErrorType> = {
+  Insufficient: "INSUFFICIENT_FUNDS",
+  MintDisabled: "MINT_DISABLED",
+  ApprovalFailed: "APPROVAL_FAILED",
+  "Ownable: caller is not the owner": "NOT_OWNER",
+}
 
 export interface ErrorMapping {
   type: ContractErrorType
@@ -37,13 +43,6 @@ function extractRevertReason(errorMessage: string): string | null {
   }
 }
 
-const knownRevertReasons: Record<string, ContractErrorType> = {
-  Insufficient: "INSUFFICIENT_FUNDS",
-  MintDisabled: "MINT_DISABLED",
-  ApprovalFailed: "APPROVAL_FAILED",
-  "Ownable: caller is not the owner": "NOT_OWNER",
-}
-
 function errorMapping(type: ContractErrorType, fallbackMessage?: string): ErrorMapping {
   return {
     type,
@@ -51,7 +50,7 @@ function errorMapping(type: ContractErrorType, fallbackMessage?: string): ErrorM
   }
 }
 
-export function mapContractError(error: unknown): ErrorMapping {
+function mapContractError(error: unknown): ErrorMapping {
   if (
     error instanceof UserRejectedRequestError ||
     (error instanceof Error &&
@@ -84,6 +83,22 @@ export function mapContractError(error: unknown): ErrorMapping {
 }
 
 export function showContractErrorToast(error: unknown): ErrorMapping {
+  const { type, message } = mapContractError(error)
+
+  if (type === "USER_REJECTED") {
+    toast.warning(message)
+  } else {
+    toast.error(message)
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[${type}]`, error)
+  }
+
+  return { type, message }
+}
+
+export function showContractSuccessToast(error: unknown) {
   const { type, message } = mapContractError(error)
 
   if (type === "USER_REJECTED") {

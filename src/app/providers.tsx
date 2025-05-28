@@ -17,7 +17,7 @@ const customLightTheme = merge(lightTheme(), {
     accentColor: "#00096d",
   },
   fonts: {
-    body: "var(--font-poppins) !important",
+    body: "var(--font-schibsted) !important",
   },
 } as Theme)
 const customDarkTheme = merge(lightTheme(), {

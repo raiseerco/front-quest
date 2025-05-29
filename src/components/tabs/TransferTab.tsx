@@ -15,6 +15,7 @@ import {
 } from "@lib/contracts/erc20"
 import { Spinner } from "@components/Ui/spinner"
 import { toast } from "react-toastify"
+import { showContractErrorToast } from "@lib/errorHandler"
 
 export default function TransferTab() {
   const { address: userAddress } = useAccount()
@@ -24,13 +25,17 @@ export default function TransferTab() {
   const [recipient, setRecipient] = useState<Address>()
   const [currentAllowance, setCurrentAllowance] = useState<bigint>()
   const [showApproveOptions, setShowApproveOptions] = useState(false)
+  const [showApproveUnlimited, setShowApproveUnlimited] = useState(true)
+  const [showApproveDiscrete, setShowApproveDiscrete] = useState(true)
   const [isApproving, setIsApproving] = useState(false)
   const [isTransferring, setIsTransferring] = useState(false)
   const [tokens, setTokens] = useState([])
 
-  const balance = useAppStore((s) => (selectedToken ? s.balances[selectedToken] : undefined))
   const addTransaction = useAppStore((s) => s.addTransaction)
   const updateTransaction = useAppStore((s) => s.updateTransaction)
+
+  // FIXME move to a custom hook
+  const balance = useAppStore((s) => (selectedToken ? s.balances[selectedToken] : undefined))
   const setBalance = useAppStore((s) => s.setBalance)
 
   useEffect(() => {
@@ -67,19 +72,20 @@ export default function TransferTab() {
   }, [])
 
   const handleApprove = async (approveAmount) => {
-    const amountBigInt = approveAmount
-      ? parseUnits(approveAmount, selectedTokenMetadata?.decimals)
-      : BigInt(0)
+    const amountBigInt =
+      approveAmount === MAX_UINT256
+        ? MAX_UINT256
+        : parseUnits(approveAmount, selectedTokenMetadata?.decimals)
     if (!selectedToken || !recipient) return
 
     const approveToast = toast.loading("Awaiting wallet approval", {
-      closeOnClick: true,
+      closeOnClick: false,
       autoClose: false,
     })
 
     try {
       setIsApproving(true)
-      const approveTx = await approve(selectedToken, userAddress, amountBigInt) // FIXME
+      const approveTx = await approve(selectedToken, userAddress, amountBigInt)
 
       addTransaction({
         hash: approveTx,
@@ -100,16 +106,23 @@ export default function TransferTab() {
       console.log("newAllowance ", newAllowance)
       setCurrentAllowance(newAllowance)
 
-      toast.dismiss(approveToast)
-      setShowApproveOptions(false)
-    } catch (error) {
-      console.error("Error approving:", error)
       toast.update(approveToast, {
-        render: "Approval failed",
-        type: "error",
+        render: "Approval successful",
+        type: "success",
         isLoading: false,
         autoClose: 5000,
       })
+
+      if (approveAmount === MAX_UINT256) {
+        setShowApproveDiscrete(false)
+      } else {
+        setShowApproveUnlimited(false)
+      }
+      setShowApproveOptions(false)
+    } catch (error) {
+      const errMapped = showContractErrorToast(error, approveToast)
+      setShowApproveUnlimited(true)
+      setShowApproveDiscrete(true)
     } finally {
       setIsApproving(false)
     }
@@ -125,7 +138,7 @@ export default function TransferTab() {
     }
 
     const transferToast = toast.loading("Awaiting transfer", {
-      closeOnClick: true,
+      closeOnClick: false,
       autoClose: false,
     })
 
@@ -152,24 +165,29 @@ export default function TransferTab() {
       await useAppStore.getState().provider?.waitForTransactionReceipt({ hash: transferTx })
       updateTransaction(transferTx, "success")
 
-      toast.dismiss(transferToast)
-      toast.success("Operation successful", { autoClose: 5000 })
+      toast.update(transferToast, {
+        render: "Operation successful",
+        type: "success",
+        isLoading: false,
+        autoClose: 5000,
+      })
 
       // Reset form
       setAmount("")
       setRecipient(undefined)
       setSelectedToken(undefined)
       setShowApproveOptions(false)
+      setShowApproveUnlimited(true)
+      setShowApproveDiscrete(true)
     } catch (error) {
       console.error("Error transferring:", error)
-      toast.update(transferToast, {
-        render: "Transfer failed",
-        type: "error",
-        isLoading: false,
-        autoClose: 5000,
-      })
+      const errMapped = showContractErrorToast(error, transferToast)
+      setShowApproveUnlimited(true)
+      setShowApproveDiscrete(true)
     } finally {
       setIsTransferring(false)
+      setShowApproveUnlimited(true)
+      setShowApproveDiscrete(true)
     }
   }
 
@@ -283,35 +301,45 @@ export default function TransferTab() {
         </button>
       ) : (
         <div className="flex flex-col gap-2">
-          <button
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-            onClick={() => handleApprove(amount)}
-            disabled={isApproving}
-          >
-            {isApproving ? (
-              <>
-                <Spinner sizeInPx={32} />
-                Approving...
-              </>
-            ) : (
-              `Approve ${amount}`
-            )}
-          </button>
+          {showApproveDiscrete && (
+            <button
+              className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+              onClick={() => {
+                handleApprove(amount)
+                setShowApproveUnlimited(false)
+              }}
+              disabled={isApproving}
+            >
+              {isApproving ? (
+                <>
+                  <Spinner sizeInPx={24} />
+                  Approving {amount} {selectedTokenMetadata?.symbol}...
+                </>
+              ) : (
+                `Approve ${amount}`
+              )}
+            </button>
+          )}
 
-          <button
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-            onClick={() => handleApprove(MAX_UINT256)}
-            disabled={isApproving}
-          >
-            {isApproving ? (
-              <>
-                <Spinner sizeInPx={32} />
-                Approving...
-              </>
-            ) : (
-              "Approve unlimited"
-            )}
-          </button>
+          {showApproveUnlimited && (
+            <button
+              className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+              onClick={() => {
+                handleApprove(MAX_UINT256)
+                setShowApproveDiscrete(false)
+              }}
+              disabled={isApproving}
+            >
+              {isApproving ? (
+                <>
+                  <Spinner sizeInPx={24} />
+                  Approving unlimited {selectedTokenMetadata?.symbol}...
+                </>
+              ) : (
+                "Approve unlimited"
+              )}
+            </button>
+          )}
         </div>
       )}
     </div>

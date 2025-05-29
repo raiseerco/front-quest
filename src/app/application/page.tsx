@@ -9,13 +9,18 @@ import EventsTab from "@components/tabs/EventsTab"
 import { useAppStore } from "@lib/store"
 import { type OperationTab } from "@lib/store/uiSlice"
 import { Spinner } from "@components/Ui/spinner"
+import { ClockIcon, DoubleArrowRightIcon, MagicWandIcon } from "@radix-ui/react-icons"
 
 export default function Application() {
   const { isConnected } = useAccount()
   const currentTab = useAppStore((s) => s.currentTab)
   const setCurrentTab = useAppStore((s) => s.setCurrentTab)
   const pendingTransactions = useAppStore((s) => s.pendingTransactions)
-
+  const tabsArray = [
+    { name: "mint", icon: <MagicWandIcon /> },
+    { name: "transfer", icon: <DoubleArrowRightIcon /> },
+    { name: "events", icon: <ClockIcon /> },
+  ]
   return (
     <div className="flex min-h-screen flex-col">
       <AppNavbar />
@@ -32,17 +37,18 @@ export default function Application() {
             <div className="container  mx-auto max-w-7xl px-4 py-16 md:px-8">
               <div className="mb-4 border-b border-stone-200">
                 <nav className="-mb-px flex justify-center space-x-8" aria-label="Tabs">
-                  {["mint", "transfer", "events"].map((tab) => (
+                  {tabsArray.map((tab) => (
                     <button
-                      key={tab}
-                      onClick={() => setCurrentTab(tab as OperationTab)}
+                      key={tab.name}
+                      onClick={() => setCurrentTab(tab.name as OperationTab)}
                       className={`${
-                        currentTab === tab
+                        currentTab === tab.name
                           ? "border-blue-500 text-blue-600"
                           : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                      } whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium capitalize`}
+                      } flex items-center gap-2 whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium capitalize`}
                     >
-                      {tab}
+                      {tab.icon}
+                      {tab.name}
                     </button>
                   ))}
                 </nav>

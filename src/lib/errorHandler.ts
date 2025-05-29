@@ -5,7 +5,7 @@ import {
   RpcRequestError,
   TimeoutError,
 } from "viem"
-import { toast } from "react-toastify"
+import { Id, toast } from "react-toastify"
 
 export const ContractErrors = {
   USER_REJECTED: "Transaction cancelled by user",
@@ -82,13 +82,13 @@ function mapContractError(error: unknown): ErrorMapping {
   return errorMapping("UNKNOWN_ERROR", error instanceof Error ? error.message : undefined)
 }
 
-export function showContractErrorToast(error: unknown): ErrorMapping {
+export function showContractErrorToast(error: unknown, toastId?: Id): ErrorMapping {
   const { type, message } = mapContractError(error)
 
   if (type === "USER_REJECTED") {
-    toast.warning(message)
+    toast.update(toastId, { render: message, type: "warning", isLoading: false, autoClose: 5000 })
   } else {
-    toast.error(message)
+    toast.update(toastId, { render: message, type: "error", isLoading: false, autoClose: 5000 })
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -98,7 +98,7 @@ export function showContractErrorToast(error: unknown): ErrorMapping {
   return { type, message }
 }
 
-export function showContractSuccessToast(error: unknown) {
+export function showContractS2uccessToast(error: unknown) {
   const { type, message } = mapContractError(error)
 
   if (type === "USER_REJECTED") {

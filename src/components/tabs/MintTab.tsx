@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useAccount, usePublicClient } from "wagmi"
-import { parseUnits, type Address, getAddress } from "viem"
+import { parseUnits, type Address, getAddress, formatUnits } from "viem"
 import { TokenMetadata } from "@lib/contracts"
 import { useAppStore } from "@lib/store"
-import { mint, tokensMetadata } from "@lib/contracts/erc20"
+import { getBalance, mint, tokensMetadata } from "@lib/contracts/erc20"
 import { Spinner } from "@components/Ui/spinner"
 import { showContractErrorToast } from "@lib/errorHandler"
+import { toast } from "react-toastify"
+import { ArchiveIcon } from "@radix-ui/react-icons"
 
 export default function MintTab() {
   const { address: userAddress } = useAccount()
@@ -17,6 +19,24 @@ export default function MintTab() {
   const isMinting = useAppStore((s) => s.isMinting)
   const setMinting = useAppStore((s) => s.setMinting)
   const addTransaction = useAppStore((s) => s.addTransaction)
+
+  const balance = useAppStore((s) => (selectedToken ? s.balances[selectedToken] : undefined))
+  const setBalance = useAppStore((s) => s.setBalance)
+
+  useEffect(() => {
+    const updateBalance = async () => {
+      if (selectedToken && selectedToken && userAddress) {
+        try {
+          const newBalance = await getBalance(selectedToken, userAddress)
+          setBalance(selectedToken, newBalance)
+        } catch (error) {
+          console.error("Error fetching balance:", error)
+        }
+      }
+    }
+    updateBalance()
+  }, [selectedToken, userAddress, setBalance])
+
   const updateTransaction = useAppStore((s) => s.updateTransaction)
   const [selectedTokenMetadata, setSelectedTokenMetadata] = useState<TokenMetadata | null>(null)
   const [tokens, setTokens] = useState([])
@@ -37,7 +57,6 @@ export default function MintTab() {
       const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
       setMinting(true)
       const mintTx = await mint(selectedToken, amountBigInt)
-
       addTransaction({
         hash: mintTx,
         type: "mint",
@@ -56,19 +75,16 @@ export default function MintTab() {
       })
       updateTransaction(mintTx, "success")
       setMinting(false)
-      // TODO: SUCCESS TOAST
+      toast.success("Minting successful", { autoClose: 5000 })
 
       // Clear scr
       setAmount("")
       setSelectedToken(undefined)
     } catch (error) {
       const errMapped = showContractErrorToast(error)
-      if (isMinting) {
-        setMinting(false)
-      }
-
-      // Clear form only if it wasnt a user rejection
+      setMinting(false)
       if (errMapped.type !== "USER_REJECTED") {
+        // Clear form only if it wasnt a user rejection
         setAmount("")
         setSelectedToken(undefined)
       }
@@ -112,6 +128,12 @@ export default function MintTab() {
             </option>
           ))}
         </select>
+        {balance && (
+          <div className="flex items-center justify-end gap-2 text-xs">
+            <ArchiveIcon /> {balance && formatUnits(balance, selectedTokenMetadata?.decimals)}
+            &nbsp;{selectedTokenMetadata?.symbol}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -137,7 +159,7 @@ export default function MintTab() {
       >
         {isMinting ? (
           <>
-            <Spinner sizeInPx={32} />
+            <Spinner sizeInPx={24} />
             Minting...
           </>
         ) : (

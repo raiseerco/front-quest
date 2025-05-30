@@ -53,10 +53,23 @@ export default function MintTab() {
   const handleMint = async () => {
     if (!selectedToken || !amount || !userAddress) return
 
+    const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
+    addTransaction({
+      hash: undefined,
+      type: "mint",
+      token: selectedToken,
+      amount: amountBigInt,
+      from: selectedToken,
+      to: userAddress as Address,
+      status: "initiated",
+      timestamp: Date.now(),
+    })
+
     try {
-      const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
       setMinting(true)
       const mintTx = await mint(selectedToken, amountBigInt)
+
+      // Update transaction with hash
       addTransaction({
         hash: mintTx,
         type: "mint",
@@ -64,7 +77,7 @@ export default function MintTab() {
         amount: amountBigInt,
         from: selectedToken,
         to: userAddress as Address,
-        status: "pending",
+        status: "initiated",
         timestamp: Date.now(),
       })
 
@@ -83,6 +96,19 @@ export default function MintTab() {
     } catch (error) {
       const errMapped = showContractErrorToast(error)
       setMinting(false)
+
+      // FIXME remove magic string
+      const status = errMapped.type === "USER_REJECTED" ? "rejected" : "error"
+      addTransaction({
+        type: "mint",
+        token: selectedToken,
+        amount: amountBigInt,
+        from: selectedToken,
+        to: userAddress as Address,
+        status,
+        timestamp: Date.now(),
+      })
+
       if (errMapped.type !== "USER_REJECTED") {
         // Clear form only if it wasnt a user rejection
         setAmount("")

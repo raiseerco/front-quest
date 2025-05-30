@@ -2,20 +2,17 @@
 
 import { useAccount } from "wagmi"
 import AppNavbar from "@components/AppNavbar"
-import AppFooter from "@components/AppFooter"
 import MintTab from "@components/tabs/MintTab"
 import TransferTab from "@components/tabs/TransferTab"
 import EventsTab from "@components/tabs/EventsTab"
 import { useAppStore } from "@lib/store"
 import { type OperationTab } from "@lib/store/uiSlice"
-import { Spinner } from "@components/Ui/spinner"
 import { ClockIcon, DoubleArrowRightIcon, MagicWandIcon } from "@radix-ui/react-icons"
 
 export default function Application() {
   const { isConnected } = useAccount()
   const currentTab = useAppStore((s) => s.currentTab)
   const setCurrentTab = useAppStore((s) => s.setCurrentTab)
-  const pendingTransactions = useAppStore((s) => s.pendingTransactions)
   const tabsArray = [
     { name: "mint", icon: <MagicWandIcon /> },
     { name: "transfer", icon: <DoubleArrowRightIcon /> },
@@ -61,17 +58,6 @@ export default function Application() {
               </div>
             </div>
           )}
-          <AppFooter>
-            {pendingTransactions.length > 0 && (
-              <div className="flex items-center justify-center space-x-2 bg-blue-50 py-2 text-sm text-amber-500">
-                <Spinner sizeInPx={16} />
-                <span>
-                  {pendingTransactions.length} pending transaction
-                  {pendingTransactions.length > 1 ? "s" : ""}
-                </span>
-              </div>
-            )}
-          </AppFooter>
         </div>
       </div>
     </div>

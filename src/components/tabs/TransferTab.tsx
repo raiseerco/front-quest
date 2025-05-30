@@ -16,6 +16,7 @@ import {
 import { Spinner } from "@components/Ui/spinner"
 import { toast } from "react-toastify"
 import { showContractErrorToast } from "@lib/errorHandler"
+import { ExternalLinkIcon } from "@radix-ui/react-icons"
 
 export default function TransferTab() {
   const { address: userAddress } = useAccount()
@@ -78,6 +79,16 @@ export default function TransferTab() {
         : parseUnits(approveAmount, selectedTokenMetadata?.decimals)
     if (!selectedToken || !recipient) return
 
+    addTransaction({
+      type: "approve",
+      token: selectedToken,
+      amount: amountBigInt,
+      from: userAddress,
+      to: recipient,
+      status: "initiated",
+      timestamp: Date.now(),
+    })
+
     const approveToast = toast.loading("Awaiting wallet approval", {
       closeOnClick: false,
       autoClose: false,
@@ -87,6 +98,7 @@ export default function TransferTab() {
       setIsApproving(true)
       const approveTx = await approve(selectedToken, userAddress, amountBigInt)
 
+      // Update transaction with hash
       addTransaction({
         hash: approveTx,
         type: "approve",
@@ -94,7 +106,7 @@ export default function TransferTab() {
         amount: amountBigInt,
         from: userAddress,
         to: recipient,
-        status: "pending",
+        status: "initiated",
         timestamp: Date.now(),
       })
 
@@ -121,6 +133,18 @@ export default function TransferTab() {
       setShowApproveOptions(false)
     } catch (error) {
       const errMapped = showContractErrorToast(error, approveToast)
+
+      const status = errMapped.type === "USER_REJECTED" ? "rejected" : "error"
+      addTransaction({
+        type: "approve",
+        token: selectedToken,
+        amount: amountBigInt,
+        from: userAddress,
+        to: recipient,
+        status,
+        timestamp: Date.now(),
+      })
+
       setShowApproveUnlimited(true)
       setShowApproveDiscrete(true)
     } finally {
@@ -137,17 +161,27 @@ export default function TransferTab() {
       return
     }
 
-    const transferToast = toast.loading("Awaiting transfer", {
+    const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
+    if (balance < amountBigInt) {
+      throw new Error("Insufficient balance")
+    }
+
+    addTransaction({
+      type: "transfer",
+      token: selectedToken,
+      amount: amountBigInt,
+      from: userAddress,
+      to: recipient,
+      status: "initiated",
+      timestamp: Date.now(),
+    })
+
+    const transferToast = toast.loading("Transfer initiated", {
       closeOnClick: false,
       autoClose: false,
     })
 
     try {
-      const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
-      if (balance < amountBigInt) {
-        throw new Error("Insufficient balance")
-      }
-
       setIsTransferring(true)
       const transferTx = await transfer(selectedToken, recipient, amountBigInt)
 
@@ -158,8 +192,26 @@ export default function TransferTab() {
         amount: amountBigInt,
         from: userAddress,
         to: recipient,
-        status: "pending",
+        status: "initiated",
         timestamp: Date.now(),
+      })
+
+      toast.update(transferToast, {
+        render: (
+          <div className="flex items-center gap-2">
+            Confirming transfer
+            <a
+              href={`https://sepolia.etherscan.io/tx/${transferTx}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#61dafb", textDecoration: "underline" }}
+            >
+              <ExternalLinkIcon />
+            </a>
+          </div>
+        ),
+        closeOnClick: false,
+        autoClose: false,
       })
 
       await useAppStore.getState().provider?.waitForTransactionReceipt({ hash: transferTx })
@@ -182,6 +234,18 @@ export default function TransferTab() {
     } catch (error) {
       console.error("Error transferring:", error)
       const errMapped = showContractErrorToast(error, transferToast)
+
+      const status = errMapped.type === "USER_REJECTED" ? "rejected" : "error"
+      addTransaction({
+        type: "transfer",
+        token: selectedToken,
+        amount: amountBigInt,
+        from: userAddress,
+        to: recipient,
+        status,
+        timestamp: Date.now(),
+      })
+
       setShowApproveUnlimited(true)
       setShowApproveDiscrete(true)
     } finally {
@@ -278,7 +342,10 @@ export default function TransferTab() {
         </button>
         {selectedToken && userAddress && currentAllowance !== undefined && (
           <label className="text-sm font-medium">
-            Current Allowance: {formatUnits(currentAllowance, selectedTokenMetadata?.decimals)}
+            Current Allowance:{" "}
+            {currentAllowance === MAX_UINT256
+              ? "Unlimited"
+              : formatUnits(currentAllowance, selectedTokenMetadata?.decimals)}
           </label>
         )}
       </div>
@@ -292,7 +359,7 @@ export default function TransferTab() {
         >
           {isApproving || isTransferring ? (
             <>
-              <Spinner sizeInPx={32} />
+              <Spinner sizeInPx={24} />
               Transferring...
             </>
           ) : (

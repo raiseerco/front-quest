@@ -34,9 +34,9 @@ export default function LandingContent() {
         "Production-ready animation library for React that makes creating fluid, interactive animations simple.",
     },
     {
-      title: "Vitest + Cypress",
+      title: "Vitest",
       description:
-        "Blazing fast unit testing with Vitest and reliable end-to-end testing with Cypress for maximum code confidence.",
+        "Blazing fast unit testing framework with modern features and excellent TypeScript support for reliable test coverage.",
     },
   ]
 

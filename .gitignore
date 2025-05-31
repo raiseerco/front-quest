@@ -35,6 +35,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# e2e testing cache
+.cache-synpress
+
 TODO.md
 TECH.md
 PLAN.md

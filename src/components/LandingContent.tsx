@@ -1,3 +1,11 @@
+import { Questrial } from "next/font/google"
+
+const questrial = Questrial({
+  weight: ["400"],
+  subsets: ["latin"],
+  variable: "--font-questrial",
+})
+
 export default function LandingContent() {
   const techStackCards = [
     {
@@ -26,9 +34,9 @@ export default function LandingContent() {
         "Production-ready animation library for React that makes creating fluid, interactive animations simple.",
     },
     {
-      title: "Vitest + Cypress",
+      title: "Vitest",
       description:
-        "Blazing fast unit testing with Vitest and reliable end-to-end testing with Cypress for maximum code confidence.",
+        "Blazing fast unit testing framework with modern features and excellent TypeScript support for reliable test coverage.",
     },
   ]
 
@@ -37,7 +45,10 @@ export default function LandingContent() {
       {/* Hero */}
       <header className="flex h-dvh items-center justify-center  px-4 py-20 text-center ">
         <div className="mx-auto max-w-4xl">
-          <h1 className="mb-6 text-4xl font-bold dark:text-stone-400 md:text-6xl">
+          <h1
+            className={`${questrial.variable} font-questrial mb-6 text-4xl font-light tracking-tight
+          dark:text-stone-400 md:text-6xl`}
+          >
             The Quest of the Wonderland
           </h1>
           <p className="mb-8 text-xl opacity-90 md:text-2xl">From zero to 0x1</p>

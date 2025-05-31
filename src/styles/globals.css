@@ -13,21 +13,25 @@
     --secondary-foreground: 24 10% 10%;
   }
 
+  .font-questrial {
+    font-family: var(--font-questrial), system-ui, sans-serif;
+  }
+
   * {
-    font-family: var(--font-poppins), system-ui, sans-serif;
+    font-family: var(--font-schibsted), system-ui, sans-serif;
   }
 
   /* rainbowkit custom */
   [data-rk] {
-    font-family: var(--font-poppins), system-ui, sans-serif !important;
+    font-family: var(--font-schibsted), system-ui, sans-serif !important;
   }
 
   .rk-fonts-body {
-    font-family: var(--font-poppins), system-ui, sans-serif !important;
+    font-family: var(--font-schibsted), system-ui, sans-serif !important;
   }
 
   .rk-fonts-button {
-    font-family: var(--font-poppins), system-ui, sans-serif !important;
+    font-family: var(--font-schibsted), system-ui, sans-serif !important;
   }
 
   .dark {

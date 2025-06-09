@@ -10,6 +10,9 @@ const config = {
   darkMode: "class",
   theme: {
     extend: {
+      screens: {
+        xl: "1920px",
+      },
       colors: {
         // Light
         background: "hsl(var(--background))",

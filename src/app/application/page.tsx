@@ -8,6 +8,7 @@ import EventsTab from "@components/tabs/EventsTab"
 import { useAppStore } from "@lib/store"
 import { type OperationTab } from "@lib/store/uiSlice"
 import { ClockIcon, DoubleArrowRightIcon, MagicWandIcon } from "@radix-ui/react-icons"
+import AppFooter from "@components/AppFooter"
 
 export default function Application() {
   const { isConnected } = useAccount()
@@ -21,7 +22,7 @@ export default function Application() {
   return (
     <div className="flex min-h-screen flex-col">
       <AppNavbar />
-      <div className="flex-1 pt-16 ">
+      <div className="flex-1 pt-16">
         <div className="overflow-y-auto">
           {!isConnected ? (
             <div className="flex h-dvh flex-col items-center justify-center">
@@ -31,8 +32,8 @@ export default function Application() {
               </p>
             </div>
           ) : (
-            <div className="container  mx-auto max-w-7xl px-4 py-16 md:px-8">
-              <div className="mb-4 border-b border-stone-200">
+            <div className=" py-16">
+              <div className="mb-4 border-b border-primary">
                 <nav className="-mb-px flex justify-center space-x-8" aria-label="Tabs">
                   {tabsArray.map((tab) => (
                     <button
@@ -40,9 +41,10 @@ export default function Application() {
                       onClick={() => setCurrentTab(tab.name as OperationTab)}
                       className={`${
                         currentTab === tab.name
-                          ? "border-blue-500 text-blue-600"
-                          : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                      } flex items-center gap-2 whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium capitalize`}
+                          ? "border-amber-500 bg-transparent"
+                          : "border-transparent bg-transparent text-gray-500 hover:border-gray-300"
+                      } flex items-center gap-2 whitespace-nowrap 
+                      rounded-t-lg border-b-2  px-4 py-4 text-sm font-medium capitalize dark:bg-transparent`}
                     >
                       {tab.icon}
                       {tab.name}
@@ -60,6 +62,7 @@ export default function Application() {
           )}
         </div>
       </div>
+      <AppFooter />
     </div>
   )
 }

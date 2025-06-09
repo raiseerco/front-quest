@@ -3,7 +3,7 @@ import { sepolia } from "wagmi/chains"
 import { useAppStore } from "@lib/store"
 import { TOKEN_ADDRESSES } from "@lib/contracts"
 
-// Extend the ABI to include mint function
+// Extend the abi to include mint function
 const tokenAbi = [
   ...erc20Abi,
   {
@@ -17,11 +17,6 @@ const tokenAbi = [
     type: "function",
   },
 ] as const
-
-// FIXME move to constants, etc
-export const MAX_UINT256 = BigInt(
-  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-)
 
 async function getTokenMetadata(provider: PublicClient, tokenAddress: Address) {
   const [name, symbol, decimals] = await Promise.all([

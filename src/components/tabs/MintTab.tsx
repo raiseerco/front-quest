@@ -55,6 +55,7 @@ export default function MintTab() {
 
     const amountBigInt = parseUnits(amount, selectedTokenMetadata?.decimals)
     addTransaction({
+      // goes to the transaction history
       hash: undefined,
       type: "mint",
       token: selectedToken,
@@ -135,14 +136,14 @@ export default function MintTab() {
   }
 
   return (
-    <div suppressHydrationWarning className="mx-auto flex max-w-lg flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-lg flex-col gap-4 p-4">
       <div className="flex flex-col gap-2">
         <label htmlFor="token-select" className="text-sm font-medium">
           Select Token
         </label>
         <select
           id="token-select"
-          className="rounded-lg border border-gray-300 p-2"
+          className="rounded-lg border border-secondary bg-primary/70 px-3  py-2 outline-none dark:bg-secondary/90"
           value={selectedToken || ""}
           onChange={handleTokenChange}
           disabled={isMinting}
@@ -169,7 +170,7 @@ export default function MintTab() {
         <input
           id="amount"
           type="number"
-          className="rounded-lg border border-gray-300 p-2"
+          className="rounded-lg border border-secondary bg-primary/70  px-3 py-2 outline-none dark:bg-secondary/90"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           disabled={!selectedToken || isMinting}
@@ -179,7 +180,11 @@ export default function MintTab() {
       </div>
 
       <button
-        className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+        className="mt-4 flex items-center justify-center gap-2
+         rounded-lg bg-amber-500/50 px-6 
+        py-3 text-base  font-semibold  transition-all
+         hover:scale-105 hover:shadow-xl disabled:opacity-50 sm:px-7 
+         sm:py-3.5 sm:text-lg xl:px-8 xl:py-4 xl:text-lg"
         onClick={handleMint}
         disabled={!selectedToken || !amount || isMinting}
       >

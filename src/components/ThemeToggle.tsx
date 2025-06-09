@@ -18,7 +18,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+      className="flex items-center justify-center rounded-full p-2 dark:bg-transparent"
       aria-label={`Switch to ${themes[(themes.indexOf(theme) + 1) % themes.length]} theme`}
     >
       {theme === "light" && (

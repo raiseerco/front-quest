@@ -49,5 +49,5 @@ export function useTokenBalance(tokenAddress: `0x${string}`) {
       clearInterval(interval)
       unwatch()
     }
-  }, [walletAddress, tokenAddress])
+  }, [walletAddress, tokenAddress, publicClient, setBalance])
 }

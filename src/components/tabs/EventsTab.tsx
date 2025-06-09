@@ -5,6 +5,7 @@ import { TOKEN_ADDRESSES } from "@lib/contracts"
 import { tokensMetadata } from "@lib/contracts/erc20"
 import { useEffect, useState } from "react"
 import { formatUnits } from "viem"
+import { EXPLORER_URL } from "@lib/constants"
 
 export default function EventsTab() {
   const transactionHistory = useAppStore((s) => s.transactionHistory)
@@ -29,6 +30,7 @@ export default function EventsTab() {
     for (const [network, tokens] of Object.entries(TOKEN_ADDRESSES)) {
       for (const [symbol, tokenAddress] of Object.entries(tokens)) {
         if (tokenAddress.toLowerCase() === address.toLowerCase()) {
+          console.log(network)
           return symbol
         }
       }
@@ -81,10 +83,10 @@ export default function EventsTab() {
         if (!tx.hash) return "-"
         return (
           <a
-            href={`https://sepolia.etherscan.io/tx/${tx.hash}`}
+            href={`${EXPLORER_URL}/${tx.hash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-900"
+            className="text-amber-600 hover:text-amber-900"
           >
             {formatAddress(tx.hash)}
           </a>
@@ -93,43 +95,53 @@ export default function EventsTab() {
     },
   ]
 
-  // Sorting
   const sortedTransactions = [...transactionHistory].sort((a, b) => b.timestamp - a.timestamp)
 
   return (
     <div className="p-4">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.header}
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                >
-                  {column.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {sortedTransactions.map((tx) => {
-              const txKey = crypto.randomUUID()
-              return (
-                <tr key={txKey}>
-                  {columns.map((column) => (
-                    <td
-                      key={`${txKey}-${column.header}`}
-                      className="whitespace-nowrap px-6 py-4 text-sm text-gray-900"
-                    >
-                      {column.accessor(tx)}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      <div className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 overflow-x-auto">
+        <div className="min-w-max">
+          <table className="w-full divide-y divide-primary">
+            <thead className="bg-secondarys/70">
+              <tr>
+                {columns.map((column) => (
+                  <th
+                    key={column.header}
+                    className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium 
+                    uppercase tracking-wider"
+                  >
+                    {column.header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-secondary ">
+              {sortedTransactions.map((tx) => {
+                const txKey = crypto.randomUUID()
+                return (
+                  <tr key={txKey}>
+                    {columns.map((column) => (
+                      <td
+                        key={`${txKey}-${column.header}`}
+                        className="whitespace-nowrap px-6 py-4 text-sm "
+                      >
+                        {column.accessor(tx)}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+        {/* horiz indicator */}
+        <div className="mt-2 flex justify-center md:hidden">
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <span>←</span>
+            <span>scroll for more</span>
+            <span>→</span>
+          </div>
+        </div>
       </div>
     </div>
   )

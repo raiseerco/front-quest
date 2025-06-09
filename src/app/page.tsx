@@ -1,15 +1,15 @@
 import Navbar from "@components/LandingNavbar"
 import LandingContent from "@components/LandingContent"
-import Footer from "@components/LandingFooter"
+import LandingFooter from "@components/LandingFooter"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Navbar />
-      <div className="flex-1 pt-16">
+      <div className="flex-1">
         <div className="overflow-y-auto">
           <LandingContent />
-          <Footer />
+          <LandingFooter />
         </div>
       </div>
     </div>

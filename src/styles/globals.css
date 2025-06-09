@@ -1,3 +1,4 @@
+@import "lenis/dist/lenis.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +10,7 @@
     --foreground: 24 10% 10%;
     --primary: 4 16% 93%;
     --primary-foreground: 24 10% 10%;
-    --secondary: 20 6% 90%;
+    --secondary: 24 5% 74%;
     --secondary-foreground: 24 10% 10%;
   }
 
@@ -19,6 +20,54 @@
 
   * {
     font-family: var(--font-schibsted), system-ui, sans-serif;
+  }
+
+  /* Hide scrollbar for Chrome, Safari, and other Webkit browsers */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for all elements */
+  * {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Hide scrollbar for html and body */
+  html,
+  body {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Lenis smooth style */
+  html {
+    scroll-behavior: auto;
+  }
+
+  html.lenis {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
   }
 
   /* rainbowkit custom */
@@ -34,10 +83,14 @@
     font-family: var(--font-schibsted), system-ui, sans-serif !important;
   }
 
+  option:hover {
+    @apply cursor-pointer bg-amber-400 text-stone-800;
+  }
+
   .dark {
     /* dark */
     --background: 24 10% 10%;
-    --foreground: 60 9% 98%;
+    --foreground: #a8a29e;
     --primary: 25 6% 5%;
     --primary-foreground: 60 9% 48%;
     --secondary: 24 6% 15%;
@@ -46,12 +99,12 @@
 
   .reading {
     /* reading */
-    --background: 39 33% 91%;
-    --foreground: 20 15% 20%;
+    --background: 20 31% 81%;
+    --foreground: 30 6% 25%;
     --primary: 28 35% 82%;
-    --primary-foreground: 39 33% 91%;
+    --primary-foreground: 30 6% 25%;
     --secondary: 28 35% 75%;
-    --secondary-foreground: 39 33% 91%;
+    --secondary-foreground: 30 6% 25%;
   }
 }
 
@@ -61,38 +114,45 @@
   }
 
   .dark {
-    @apply bg-background text-foreground;
+    @apply bg-background text-stone-400;
   }
 
   .dark h1,
   .dark h2,
   .dark h3 {
-    @apply text-primary;
+    @apply text-stone-500;
+  }
+
+  a {
+    @apply hover:text-amber-700;
   }
 
   .dark a {
-    @apply text-secondary hover:text-primary;
+    @apply text-stone-500 hover:text-amber-700;
   }
 
   .dark button {
-    @apply bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground;
+    @apply bg-stone-700 text-stone-200 hover:shadow-lg hover:shadow-amber-400/30;
   }
 
+  .button {
+    @apply bg-stone-100 text-stone-800 hover:bg-amber-300 hover:text-stone-800;
+  }
   .reading {
-    @apply bg-[#f5ecd8] text-[#3b2f2f];
+    @apply bg-[#4d4431] text-[#3b2f2f];
   }
 
   .reading h1,
   .reading h2,
   .reading h3 {
-    @apply text-[#ab5a1f];
+    @apply text-stone-700;
   }
 
   .reading a {
-    @apply text-[#81603f] hover:text-[#8b4513];
+    @apply text-stone-700 hover:text-amber-600;
   }
 
   .reading button {
-    @apply bg-[#a67c52] text-[#f5ecd8] hover:bg-[#ad6838];
+    @apply text-stone-700 hover:shadow-lg;
   }
 }

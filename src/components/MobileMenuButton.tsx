@@ -9,7 +9,9 @@ export default function MobileMenuButton({ isMenuOpen, setIsMenuOpen }: MobileMe
   return (
     <button
       onClick={() => setIsMenuOpen(!isMenuOpen)}
-      className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+      className="inline-flex items-center justify-center rounded-md p-2
+       text-gray-400 hover:bg-secondary
+       hover:text-gray-500"
       aria-expanded={isMenuOpen}
       aria-label="Toggle menu"
     >

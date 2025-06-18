@@ -157,3 +157,5 @@ Over the course of these weeks, I worked steadily (2h every other day), deliveri
 Thanks for reading!
 
 Built with ❤️ by @EthSagan
+
+Update: as no answer has not been received for a while, I'm moving this project to my repo.
